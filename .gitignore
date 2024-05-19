@@ -12,6 +12,8 @@ exp/
 *.pt
 *.pth
 *.jpg
+*.png
+*.mp4
 todo.md
 videos/ 
 src/data

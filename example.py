@@ -19,7 +19,7 @@ def parse_args():
         '--tools',
         type=str,
         nargs='+',
-        default=['ReferringTracker'],
+        default=['ReferringTracker', 'ObjectDetection'],
     )
     args = parser.parse_args()
     return args
@@ -28,7 +28,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    model = HFTransformer(path='/root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b', meta_template=META)
+    model = HFTransformer(path='/root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-7b', meta_template=META)
 
     tools = [load_tool(tool_type, device='cuda').to_lagent() for tool_type in args.tools]
     chatbot = Internlm2Agent(
@@ -59,11 +59,18 @@ def main():
         for history in result.inner_steps:
             if history['role'] == 'system':
                 print(f"\033[92mSystem\033[0m:{history['content']}")
-            elif history['role'] == 'assistant':
+            elif history['role'] in ['assistant', 'language', 'environment']:
                 print(f"\033[92mBot\033[0m:\n{history['content']}")
+            elif history['role'] in ['tool']:
+                print(f"\033[92mTool\033[0m:\n{history['content']}")
 
 
 if __name__ == '__main__':
 
+    # tool = load_tool('SegmentObject', device='cuda')
+    # segmentation = tool('M0101/img000001.jpg', 'bus')
+
     main()
     # Please detect the bus in the image `example.jpg`.
+    # Please track the bus in the image sequence `M0101`
+    # Please segment the laptop and cup in the video `test.mp4`
